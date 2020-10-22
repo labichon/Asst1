@@ -50,7 +50,14 @@ void *mymalloc (size_t numberOfBytes){
 		List->size = 0;
 		result = (void*)(++curr);
 		return result;
-	} //we need to make way for new block allocation if size needed by splitting new block
+	} else if ((curr->size) > (numberOfBytes + sizeof(Block))){
+		//we need a function that finds a free block
+		//result = (void*)(++curr);
+		//return result;
+	} else { //no sufficient data
+		result = NULL;
+		return result;
+	}
 }
 
 
