@@ -62,6 +62,13 @@ void *mymalloc (size_t numberOfBytes){
 
 }
 
+void free(void* ptr){
+	if(((void*)memory<=ptr) && (ptr <= (void*)(memory+4096))){
+		Block* curr = ptr;
+		--curr;
+		curr->free = 1;	
+	}
+}
 
 int main(){
 }
