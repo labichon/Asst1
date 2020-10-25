@@ -1,4 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <sys/time.h>
 #include "mymalloc.h"
 
 #ifndef DEBUG
@@ -7,7 +10,7 @@
 
 
 int main(int argc, char *argv[]) {
-
+/*
 	// Allocate 0 bytes error
 	malloc(0);
 	// Free non-pointer error
@@ -22,14 +25,132 @@ int main(int argc, char *argv[]) {
 	// Free same pointer
 	free(p);
 	free(p);
+*/
+	int i, j;
+	int *testarray[120];
+	struct timeval begin, end;
+	int timeA = 0;
+       	int timeB = 0;
+       	int timeC = 0;
+      	int timeD = 0;
+       	int timeE = 0;
 
 	// Test case A
-	for (int i = 0; i < 1; i++) {
-		char *temp = (char*) malloc(1);
-		int *temp2 = (int*) malloc(sizeof(int));
-		free((void *) temp);
-		free(temp2);
+	for (i = 0; i < 50; i++) {
+		gettimeofday(&begin, 0);
+		for (j = 0; j < 120; j++){
+			testarray[j] = (int *) malloc(1);
+			free(testarray[j]);
+			testarray[j] = NULL;
+		}
+		gettimeofday(&end, 0);
+		timeA = timeA + (end.tv_sec - begin.tv_sec);
 	}
+
+	//Test Case B
+	for (i = 0; i < 50; i++) {
+		gettimeofday(&begin, 0);
+		for(j = 0; j < 120; j++) {
+			testarray[j] = (int *) malloc(1);
+		}
+		for(j = 0; j < 120; j++) {
+			free(testarray[j]);
+			testarray[j] = NULL;
+		}
+		gettimeofday(&end, 0);
+		timeB = timeB + (end.tv_sec - begin.tv_sec);
+	}
+	
+	//Test Case C
+	for (i = 0; i < 50; i++) {
+		gettimeofday(&begin, 0);
+		int MallocCounter = 0;
+		int numberOfMallocs = 0;
+		int numberOfFrees = 0;
+		srand(time(NULL));
+		int random = rand() % 2;
+		while (MallocCounter < 240) {
+			if(random == 0) {
+				testarray[numberOfMallocs] = (int *) malloc(1);
+				MallocCounter++;
+				if(!(testarray[numberOfMallocs] == NULL)) {
+					numberOfMallocs++;
+					MallocCounter++;
+				} else {
+					free(testarray[numberOfFrees]);
+					testarray[numberOfFrees] = NULL;
+					numberOfFrees++;
+				}
+			if(random == 1){
+				free(testarray[numberOfFrees]);
+				if((testarray[numberOfFrees]) == NULL) {
+					testarray[numberOfMallocs] = (int *) malloc(1);
+					numberOfMallocs++;
+					MallocCounter;
+				} else {
+					testarray[numberOfFrees] = NULL;
+				       	numberOfFrees++;	
+				}
+
+			}
+			}
+			random = rand() % 2;
+		}
+		for(j = numberOfFrees; j < 240; j++){
+			free(testarray[j]);
+			testarray[j] = NULL;
+		}
+		gettimeofday(&end, 0);	
+		timeC = timeC + (end.tv_sec - begin.tv_sec);
+	}
+
+	//Test Case D
+	for (i = 0; i < 50; i++) {
+		gettimeofday(&begin, 0);
+                for (j = 0; j < 500; j++){
+                        testarray[j] = (int *) malloc(1);
+                        free(testarray[j]);
+                        testarray[j] = NULL;
+                }
+		int k;
+		for(k = 0; k < 500; k++) {
+                        testarray[k] = (int *) malloc(1);
+                }
+                for(k = 0; k < 500; k++) {
+                        free(testarray[k]);
+                        testarray[k] = NULL;
+                }
+                gettimeofday(&end, 0);
+                timeD = timeD + (end.tv_sec - begin.tv_sec);
+	}
+
+	//Test Case E
+	for (i = 0; i < 50; i++) {
+		gettimeofday(&begin, 0);
+		for (j = 0; j < 50; j++) {
+			testarray[j] = (int *) malloc(1);
+		}
+		for (j = 0; j < 50; j += 2) {
+			free(testarray[j]);
+			testarray[j] = NULL;
+		}
+		for (j = 0; j < 50; j += 2) {
+			testarray[j] = (int *) malloc(1);
+		}
+		for (j = 0; j < 50; j++) {
+			free(testarray[j]);
+			testarray[j] = NULL;
+		}
+		gettimeofday(&end, 0);
+		timeE = timeE + (end.tv_sec - begin.tv_sec);
+	}	
+
+	printf("Mean time to execute Case A: %d seconds\n", timeA);
+	printf("Mean time to execute Case B: %d seconds\n", timeB);
+	printf("Mean time to execute Case C: %d seconds\n", timeC);
+	printf("Mean time to execute Case D: %d seconds\n", timeD);
+	printf("Mean time to execute Case E: %d seconds\n", timeE);
+
 
 	return 0;
 }
