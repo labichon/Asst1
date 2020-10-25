@@ -70,5 +70,3 @@ void free(void* ptr){
 	}
 }
 
-int main(){
-}
