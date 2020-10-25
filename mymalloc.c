@@ -155,13 +155,5 @@ void myfree(void* ptr, char* file, int line){
 	// Pointer not allocated
 	printf("%s:%d : Pointer  %p not allocated\n",
                 file, line, ptr);
-
-	/*
-	if(((void*)memory<=ptr) && (ptr <= (void*)(memory+MEM_LEN))){
-		metadata* curr = ptr;
-		--curr;
-		curr->free = 1;	
-	}
-	*/
 }
 
