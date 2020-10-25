@@ -9,7 +9,9 @@
 
 static char memory[MEM_LEN];
 
-//if free = 1, structure is free; if free = 0, structure is not free
+// Our metadata struct
+// if free = 1, structure is free
+// if free = 0, structure is not free
 typedef struct metadata {
 	char free;
 	unsigned short size;
@@ -17,7 +19,8 @@ typedef struct metadata {
 } metadata;
 
 
-//initialize List
+// This function initializes the List in order to
+// be traversed and used by mymalloc and myfree
 void initialize (){
 	metadata *head = (metadata *) memory;
 	head->size = MEM_LEN - sizeof(metadata);
@@ -26,14 +29,17 @@ void initialize (){
 }
 
 
-//actual malloc function
+// We loop throughout the list looking for free space such that 
+// can fit the sizeof(metadata) and the required bytes
 void *mymalloc (size_t reqBytes, char *file, int line){
+	
 	if (DEBUG) {
 		printf("\n=====MALLOC=====\n");
 		printf("Size of metadata: %lu\n", sizeof(metadata));
 		printf("Size of char: %lu\n", sizeof(char)); //Should be 1
 	}
-
+	
+	//invalid entry into mymalloc
 	if (reqBytes == 0) { 
 		printf("%s:%d : Cannot request %lu bytes, returning NULL\n", file, line, reqBytes);
 		return NULL;
@@ -63,7 +69,7 @@ void *mymalloc (size_t reqBytes, char *file, int line){
 	}
 	
 	if(curr == NULL) {
-		// Cannot alloc
+		// If there is no valid block, we exit
 		printf("%s:%d : Cannot allocate %lu requested bytes, returning NULL\n", 
 			file, line, reqBytes);
 		return NULL;
@@ -93,6 +99,10 @@ void *mymalloc (size_t reqBytes, char *file, int line){
 
 }
 
+
+// We loop through the List looking for a metadata struct such that
+// the address of the struct + the sizeof(metadata) matches the passed
+// ptr exactly
 void myfree(void* ptr, char* file, int line){
 
 	if (DEBUG) printf("\n=====FREE=====\n");
@@ -104,11 +114,13 @@ void myfree(void* ptr, char* file, int line){
 		return;
 	}
 
-
+	// Pointers to traverse the List
 	metadata *curr = (metadata *)memory;
 	metadata *prev = NULL;
 
+	// While our pointer is still inbounds and hasn't passed the ptr, we traverse the List
 	while (curr != NULL && ((void *)curr) < ptr) {
+		// We found our match
 		if (((void *)curr) + sizeof(metadata) == ptr) {
 			if (curr->free == 1) {
 				// Already freed memory
@@ -119,7 +131,7 @@ void myfree(void* ptr, char* file, int line){
 			
 			if (DEBUG) printf("Freeing %p\n", ptr);
 
-			// Free black of memory
+			// Free block of memory
 			curr->free = 1;
 
 			if (DEBUG) {
@@ -128,6 +140,7 @@ void myfree(void* ptr, char* file, int line){
 			}
 
 			// Coalesce if neighbors are free
+			// Coalesces with the next metadata
 			if (curr->next != NULL && curr->next->free == 1) {
 				curr->size += sizeof(metadata) + curr->next->size;
 				curr->next = curr->next->next;
@@ -137,6 +150,8 @@ void myfree(void* ptr, char* file, int line){
                                         	curr->size, curr->free, (void *)curr->next);
                         	}
 			}
+
+			//Coalesces with the previous metadata
 			if (prev != NULL && prev->free == 1) {
 				prev->size += sizeof(metadata) + curr->size;
 				prev->next = curr->next;
