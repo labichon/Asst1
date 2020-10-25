@@ -1,0 +1,78 @@
+Test Cases:
+
+Workload D:
+----------
+
+In this workload, we first allocate 100 chunks of memory (each being 1 byte), but
+we allocate in reverse in our for loop. 
+
+pointers                   heap (testarray)
+--------                  ------
+
+Pointer0 (NULL)           | Block 0 |
+Pointer1 (NULL)           | Block 1 |
+
+   ...                         ...
+
+Pointer99 ->              | Block 99 |
+
+
+
+Pointer99 is allocated first, then the rest of the List follows.
+
+After we finish allocating, we free the entire List. In a similar fashion,
+we start from 99 and work our way down.
+
+
+pointers                   heap (testarray)
+--------                  ------
+
+Pointer0 ->               | Block 0 |
+Pointer1 ->               | Block 1 |
+
+   ...                         ...
+
+Pointer99 (NULL)          | Block 99 |
+
+
+
+Pointer99 is freed first, then the rest of the List follows.
+We included this example to illustrate that is is possible to allocate and free
+from either the traditional forwards direction, or backwards.
+
+
+
+
+
+Workload E:
+----------
+
+
+
+In this workload, we first allocate 50 chunks of memory (50 bytes) normally. Afterwards,
+we free every other byte as illustrated below:
+
+
+pointers                   heap (testarray)
+--------                  ------
+
+Pointer0 (NULL)           | Block 0 |
+Pointer1 ->               | Block 1 |
+Pointer2 (NULL)           | Block 2 |
+Pointer3 ->               | Block 3 |
+
+   ...                         ...
+
+Pointer98 (NULL)          | Block 98 |
+Pointer99 ->              | Block 99 |
+
+
+
+Every other byte gets freed, but then gets reallocated with malloc. So now the entire list 
+is allocated.
+
+After this, we then free the entire array.
+
+We included this example to illustrate how the heap works. The heap looks exactly the same
+as it would we have not freed and reallocated every other byte. We demonstrated that no
+splitting or coalescing occurs when it's not supposed to, and that no chunk changed in size.
