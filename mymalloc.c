@@ -29,7 +29,8 @@ void initialize (){
 //actual malloc function
 void *mymalloc (size_t reqBytes, char *file, int line){
 	if (DEBUG) {
-		printf("\nSize of metadata: %lu\n", sizeof(metadata));
+		printf("\n=====MALLOC=====\n");
+		printf("Size of metadata: %lu\n", sizeof(metadata));
 		printf("Size of char: %lu\n", sizeof(char)); //Should be 1
 	}
 
@@ -88,37 +89,79 @@ void *mymalloc (size_t reqBytes, char *file, int line){
 		printf("Next Metadata: (size: %u, free: %d, next: %p)\n", 
                         curr->next->size, curr->next->free, (void *)curr->next->next);
 	}
-	return (void *) (curr + sizeof(metadata));
-
-	/*
-	//if the metadata block cannot be used, we traverse until we find one that can be used
-	while((((curr->size)<reqBytes)||((curr->free) == 0)) && (curr->next != NULL)) {
-		prev = curr;
-		curr = curr->next;
-	}
-
-	//metadata block is exactly the size needed
-        if((curr->size)==reqBytes){
-		curr->size = 0;
-		result = (void*)(++curr);
-		return result;
-	} else if ((curr->size) > (reqBytes + sizeof(metadata))){
-		//we need a function that finds a free block
-		//result = (void*)(++curr);
-		//return result;
-	} else { //no sufficient data
-		result = NULL;
-		return result;
-	}
-	*/
+	return (void *)curr + sizeof(metadata);
 
 }
 
 void myfree(void* ptr, char* file, int line){
+
+	if (DEBUG) printf("\n=====FREE=====\n");
+
+	if(ptr < ((void *)memory) || ptr >= ((void *)(memory+MEM_LEN))) {
+		// Pointer invalid or out of bounds of memory array
+		printf("%s:%d : Pointer %p invalid or outside memory array\n",
+                        file, line, ptr);
+		return;
+	}
+
+
+	metadata *curr = (metadata *)memory;
+	metadata *prev = NULL;
+
+	while (curr != NULL && ((void *)curr) < ptr) {
+		if (((void *)curr) + sizeof(metadata) == ptr) {
+			if (curr->free == 1) {
+				// Already freed memory
+				printf("%s:%d : Pointer %p already freed\n",
+                        		file, line, ptr);
+				return;
+			}
+			
+			if (DEBUG) printf("Freeing %p\n", ptr);
+
+			// Free black of memory
+			curr->free = 1;
+
+			if (DEBUG) {
+				printf("Metadata: (size: %u, free: %d, next: %p)\n",
+                        		curr->size, curr->free, (void *)curr->next);
+			}
+
+			// Coalesce if neighbors are free
+			if (curr->next != NULL && curr->next->free == 1) {
+				curr->size += sizeof(metadata) + curr->next->size;
+				curr->next = curr->next->next;
+				if (DEBUG) {
+					printf("Coalescing with next\n");
+                                	printf("Metadata: (size: %u, free: %d, next: %p)\n",
+                                        	curr->size, curr->free, (void *)curr->next);
+                        	}
+			}
+			if (prev != NULL && prev->free == 1) {
+				prev->size += sizeof(metadata) + curr->size;
+				prev->next = curr->next;
+				if (DEBUG) {
+                                        printf("Coalescing with prev\n");
+                                        printf("Metadata: (size: %u, free: %d, next: %p)\n",
+                                                prev->size, prev->free, (void *)prev->next);
+                                }
+			}
+			return;
+		}
+		prev = curr;
+		curr = curr->next;
+	}
+
+	// Pointer not allocated
+	printf("%s:%d : Pointer  %p not allocated\n",
+                file, line, ptr);
+
+	/*
 	if(((void*)memory<=ptr) && (ptr <= (void*)(memory+MEM_LEN))){
 		metadata* curr = ptr;
 		--curr;
 		curr->free = 1;	
 	}
+	*/
 }
 
