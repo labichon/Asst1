@@ -85,32 +85,6 @@ int main(int argc, char *argv[]) {
 					numberOfFrees++;
 				}
 			}
-	
-			/*
-			if(random == 0) {
-				testarray[numberOfMallocs] = (int *) malloc(1);
-				MallocCounter++;
-				if(!(testarray[numberOfMallocs] == NULL)) {
-					numberOfMallocs++;
-					MallocCounter++;
-				} else {
-					free(testarray[numberOfFrees]);
-					testarray[numberOfFrees] = NULL;
-					numberOfFrees++;
-				}
-			if(random == 1){
-				free(testarray[numberOfFrees]);
-				if((testarray[numberOfFrees]) == NULL) {
-					testarray[numberOfMallocs] = (int *) malloc(1);
-					numberOfMallocs++;
-					MallocCounter++;
-				} else {
-					testarray[numberOfFrees] = NULL;
-				       	numberOfFrees++;	
-				}
-
-			}
-			}*/
 			random = rand() % 2;
 		}
 		
@@ -122,22 +96,17 @@ int main(int argc, char *argv[]) {
 		timeC = timeC + ((end.tv_sec - begin.tv_sec)*1000000 + (end.tv_usec - begin.tv_usec));
 	}
 
+
 	//Test Case D
 	for (i = 0; i < 50; i++) {
 		gettimeofday(&begin, 0);
-                for (j = 0; j < 500; j++){
+                for (j = 100; j > 0; j--){
                         testarray[j] = (int *) malloc(1);
-                        free(testarray[j]);
-                        testarray[j] = NULL;
                 }
-		int k;
-		for(k = 0; k < 100; k++) {
-                        testarray[k] = (int *) malloc(1);
-                }
-                for(k = 0; k < 100; k++) {
-                        free(testarray[k]);
-                        testarray[k] = NULL;
-                }
+		for (j = 100; j > 0; j--){
+			free(testarray[j]);
+			testarray[j] = NULL;
+		}
                 gettimeofday(&end, 0);
                 timeD = timeD + ((end.tv_sec - begin.tv_sec)*1000000 + (end.tv_usec - begin.tv_usec));
 	}
@@ -164,11 +133,11 @@ int main(int argc, char *argv[]) {
 		timeE = timeE + ((end.tv_sec - begin.tv_sec)*1000000 + (end.tv_usec - begin.tv_usec));
 	}	
 
-	printf("Mean time to execute Case A: %d milliseconds\n", timeA/50);
-	printf("Mean time to execute Case B: %d milliseconds\n", timeB/50);
-	printf("Mean time to execute Case C: %d milliseconds\n", timeC/50);
-	printf("Mean time to execute Case D: %d milliseconds\n", timeD/50);
-	printf("Mean time to execute Case E: %d milliseconds\n", timeE/50);
+	printf("Average time to execute Case A: %d milliseconds\n", timeA/50);
+	printf("Average time to execute Case B: %d milliseconds\n", timeB/50);
+	printf("Average time to execute Case C: %d milliseconds\n", timeC/50);
+	printf("Average time to execute Case D: %d milliseconds\n", timeD/50);
+	printf("Average time to execute Case E: %d milliseconds\n", timeE/50);
 
 
 	return 0;
