@@ -133,11 +133,11 @@ int main(int argc, char *argv[]) {
 		timeE = timeE + ((end.tv_sec - begin.tv_sec)*1000000 + (end.tv_usec - begin.tv_usec));
 	}	
 
-	printf("Average time to execute Case A: %d milliseconds\n", timeA/50);
-	printf("Average time to execute Case B: %d milliseconds\n", timeB/50);
-	printf("Average time to execute Case C: %d milliseconds\n", timeC/50);
-	printf("Average time to execute Case D: %d milliseconds\n", timeD/50);
-	printf("Average time to execute Case E: %d milliseconds\n", timeE/50);
+	printf("Average time to execute Case A: %d microseconds\n", timeA/50);
+	printf("Average time to execute Case B: %d microseconds\n", timeB/50);
+	printf("Average time to execute Case C: %d microseconds\n", timeC/50);
+	printf("Average time to execute Case D: %d microseconds\n", timeD/50);
+	printf("Average time to execute Case E: %d microseconds\n", timeE/50);
 
 
 	return 0;
