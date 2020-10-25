@@ -21,6 +21,9 @@ typedef struct metadata {
 
 // This function initializes the List in order to
 // be traversed and used by mymalloc and myfree
+// by crerating the first block of metaddata.
+// It should only be called when malloc has not
+// been called before
 void initialize (){
 	metadata *head = (metadata *) memory;
 	head->size = MEM_LEN - sizeof(metadata);
@@ -28,9 +31,14 @@ void initialize (){
 	head->next = NULL;
 }
 
-
-// We loop throughout the list looking for free space such that 
-// can fit the sizeof(metadata) and the required bytes
+/* mymalloc(size_t, char *, int)
+ * INPUTS: required bytes (size_t), char* (file name), line (int)
+ * OUTPUT: void pointer to malloced space
+ * ERRORS: requesting 0 bytes, finding no free space
+ * (both returned as NULL)
+ * We loop throughout the list looking for free space such that 
+ * can fit the sizeof(metadata) and the required bytes
+*/ 
 void *mymalloc (size_t reqBytes, char *file, int line){
 	
 	if (DEBUG) {
@@ -99,10 +107,15 @@ void *mymalloc (size_t reqBytes, char *file, int line){
 
 }
 
-
-// We loop through the List looking for a metadata struct such that
-// the address of the struct + the sizeof(metadata) matches the passed
-// ptr exactly
+/* myfree(void *, char *, int)
+ * INPUTS: ptr to malloced memory (void *), file name (char *), line number (int)
+ * OUTPUTS: n/a
+ * ERRORS: ptr not a valid pointer, ptr outside memory array, ptr already freed,
+ * ptr not allocated by malloc (invalid)
+ * We loop through the List looking for a metadata struct such that
+ * the address of the struct + the sizeof(metadata) matches the passed
+ * ptr exactly
+*/
 void myfree(void* ptr, char* file, int line){
 
 	if (DEBUG) printf("\n=====FREE=====\n");

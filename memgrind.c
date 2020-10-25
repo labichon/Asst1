@@ -11,23 +11,6 @@
 
 int main(int argc, char *argv[]) {
 
-/*
-	// Allocate 0 bytes error
-	malloc(0);
-	// Free non-pointer error
-	int i = 1;
-	free((int *) i);
-	// Free pointer not allocated by malloc
-	int *p = (char *)malloc(100);
-        free(p+10);
-	// Part 2
-	int *x;
-	free(x);	
-	// Free same pointer
-	free(p);
-	free(p);
-*/
-
 	int i, j;
 	int *testarray[1000];
 	struct timeval begin, end;
